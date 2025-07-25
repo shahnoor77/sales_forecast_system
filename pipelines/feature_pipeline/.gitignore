@@ -1,0 +1,25 @@
+# Ignore raw data files
+pipelines/feature_pipeline/data/raw/
+
+# Optionally ignore all CSV files anywhere
+*.csv
+
+# Ignore log files
+*.log
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environment folders
+.venv/
+env/
+venv/
+
+# VSCode settings (optional)
+.vscode/
+.env
+.sample_env/
