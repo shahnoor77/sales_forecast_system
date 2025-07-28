@@ -1,7 +1,0 @@
-
-#credentials to connect to the database
-DB_HOST=localhost
-DB_PORT=port
-DB_NAME=your_database_name
-DB_USER=user
-DB_PASSWORD=your_database_password

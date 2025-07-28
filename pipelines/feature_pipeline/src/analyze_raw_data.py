@@ -51,7 +51,9 @@ def preview_all_tables(data_dir, n_rows=3):
             print(f"Failed to read {file.name}: {e}")
     # print total number of tables explored
     print(f"\nTotal tables explored: {len(csv_files)}")
-    # print total number of columns across all tables with their names
+    # print total number of columns across all tables with their names and file names
+    print("="*80)
+    print("Total columns across all tables:")
     all_columns = set()
     for file in csv_files:
         try:
@@ -59,8 +61,13 @@ def preview_all_tables(data_dir, n_rows=3):
             all_columns.update(df.columns)
         except Exception as e:
             print(f"Failed to read {file.name}: {e}")
+        # print all columns with their file names
+    for col in all_columns:
+        print(f"Column: {col}")
+        print(f"File: {file.name} | Column: {col}")
     print(f"Total unique columns across all tables: {len(all_columns)}")
-    print("Unique columns:", list(all_columns))
+
+    
 
 
 

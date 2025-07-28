@@ -6,17 +6,19 @@ authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.13"
-sqlalchemy = "^2.0.41"
+python = "3.10"
+
+sqlalchemy = "<=1.4.48"
 dotenv = "^0.9.9"
 psycopg2 = "^2.9.10"
 mysql-connector-python = "^9.4.0"
 pymysql = "^1.1.1"
 pyarrow = "^21.0.0"
-pandas = "^2.3.1"
+pandas = "<2.2.0"
 lint = "^1.2.1"
 makefile = "^1.1.0"
 matplotlib = "^3.10.3"
+
 
 
 [build-system]
