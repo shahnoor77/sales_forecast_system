@@ -1,7 +1,5 @@
-# Use official Python Dev Container as base
 FROM mcr.microsoft.com/devcontainers/python:3.10
 
-# Install system dependencies for confluent-kafka
 RUN apt-get update && apt-get install -y \
     librdkafka-dev \
     libffi-dev \
@@ -11,5 +9,4 @@ RUN apt-get update && apt-get install -y \
     python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Poetry
 RUN pip install poetry
