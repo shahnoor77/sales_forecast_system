@@ -2,7 +2,7 @@
 pipelines/feature_pipeline/data/raw/
 
 # Optionally ignore all CSV files anywhere
-*.csv
+
 
 # Ignore log files
 *.log
