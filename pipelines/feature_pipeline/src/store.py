@@ -35,7 +35,7 @@ def store_data_to_feature_store():
         print(" Deleting existing corrupted feature group")
         fg.delete()
     except:
-        print("ℹ No existing feature group, continuing")
+        print("No existing feature group, continuing")
 
     # Recreate it
     fg = feature_store.create_feature_group(
@@ -46,7 +46,7 @@ def store_data_to_feature_store():
         description="Sales records for demand forecasting",
         online_enabled=False,  # Set to True if you need online access
     )
-    df = pd.read_csv("data/transformed/final_standardized.csv")
+    df = pd.read_csv("./data/transformed/final_standardized.csv")
 
 # Fill nulls in product_name (must be string for primary key)
     df["product_name"] = df["product_name"].fillna("unknown_product").astype(str).str.slice(0, 100)
