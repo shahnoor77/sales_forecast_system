@@ -21,5 +21,8 @@ venv/
 
 # VSCode settings (optional)
 .vscode/
-.env
+
 .sample_env/
+.env/
+.env
+./env

@@ -17,7 +17,7 @@ pyarrow = "^21.0.0"
 lint = "^1.2.1"
 makefile = "^1.1.0"
 matplotlib = "^3.10.3"
-hopsworks = "^4.2"
+hopsworks = {extras = ["python"], version = "^4.3.1"}
 pandas = "^2.3.1"
 
 

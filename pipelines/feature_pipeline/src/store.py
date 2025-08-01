@@ -42,9 +42,9 @@ def store_data_to_feature_store():
         name=fg_name,
         version=fg_version,
         primary_key=["product_name", "order_id"],  # adjust based on your data
-        #event_time ="created_at",  # adjust based on your data
+        event_time ="created_at",  # adjust based on your data
         description="Sales records for demand forecasting",
-        online_enabled=False,  # Set to True if you need online access
+        online_enabled=True,  # Set to True if you need online access
     )
     df = pd.read_csv("./data/transformed/final_standardized.csv")
 
@@ -59,7 +59,7 @@ def store_data_to_feature_store():
     # Insert data
     if fg is None:
         raise RuntimeError("Feature group is None. Aborting.")
-    fg.insert(df, write_options={'start_offline': True, 'wait_for_job': False})
+    fg.insert(df, write_options={'start_offline': False, 'wait_for_job': True})
     print("Data inserted into feature store.")
 
 if __name__ == "__main__":

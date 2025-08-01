@@ -1,5 +1,9 @@
 {
   "name": "Sales Forecast Dev Env",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+    "version": "latest"}
+  },
   "build": {
     "dockerfile": "Dockerfile",
     "context": ".."

@@ -6,7 +6,16 @@ authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.10,<3.13"
+scikit-learn = "^1.7.1"
+lightgbm = "^4.6.0"
+comet-ml = "^3.50.0"
+dotenv = "^0.9.9"
+pyarrow = "^21.0.0"
+hopsworks = "4.2.1"
+joblib = "^1.5.1"
+seaborn = "^0.13.2"
+statsmodels = "^0.14.5"
 
 
 [build-system]
