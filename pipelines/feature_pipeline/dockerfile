@@ -1,45 +1,42 @@
-# syntax=docker/dockerfile:1
-FROM python:3.10.3-slim-buster
+# Use official Python 3.12 slim base
+FROM python:3.12-slim
 
-# Install system packages and build tools required by confluent-kafka
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    curl \
-    python3-dev \
-    libssl-dev \
-    libsasl2-dev \
-    libzstd-dev \
-    liblz4-dev \
-    make \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Ensure output is not buffered (real-time logs)
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-
-# Install Poetry
-RUN pip install --upgrade pip \
- && pip install poetry==1.8.5
+ENV POETRY_VERSION=1.8.2
 
 # Set working directory
 WORKDIR /app
 
-# Add /app/src to PYTHONPATH so modules can be imported cleanly
-ENV PYTHONPATH="${PYTHONPATH}:/app/src"
+# Install system-level dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    libpq-dev \
+    default-libmysqlclient-dev \
+    gcc \
+    git \
+    && apt-get clean
 
-# Copy Poetry files
-COPY pyproject.toml poetry.lock /app/
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="/root/.local/bin:$PATH"
 
-# Install dependencies (no venv to make Docker lighter)
-RUN poetry config virtualenvs.create false \
- && poetry install --no-interaction --no-ansi
+# Disable Poetry virtualenv creation
+RUN poetry config virtualenvs.create false
 
-# Copy your code
-COPY src/ /app/src/
+# Copy dependency files first
+COPY pyproject.toml poetry.lock ./
 
-# Optional: Copy data if needed inside container
-# COPY data/ /app/data/
+# Install dependencies
+RUN poetry install --no-interaction --no-ansi
 
-# Run store.py as the default command
-CMD ["poetry", "run", "python", "src/store.py"]
+# Copy rest of the application code
+COPY . .
+
+# Command to run pipeline
+CMD ["python", "-m", "src.main"]
+

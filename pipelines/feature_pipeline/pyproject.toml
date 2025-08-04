@@ -19,6 +19,7 @@ makefile = "^1.1.0"
 matplotlib = "^3.10.3"
 hopsworks = {extras = ["python"], version = "^4.3.1"}
 pandas = "^2.3.1"
+networkx = "2.7"
 
 
 

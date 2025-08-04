@@ -1,14 +1,16 @@
-import comet_ml  # Must be first import!
+import comet_ml# Must be first import!
 import logging
 import numpy as np
 import joblib
 import matplotlib.pyplot as plt
 import traceback
+import os
+from dotenv import load_dotenv
 
-from src.utils import load_env
+
 from src.hopsworks_config import init_hopsworks, get_sales_data
 from src.feature_engineering import engineer_features
-from src.models import train_and_tune_model  # ✅ Updated function
+from src.models import train_and_tune_model  
 from src.model_evaluation import (
     calculate_core_metrics,
     analyze_errors,
@@ -23,24 +25,25 @@ from src.model_registry import register_model
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+load_dotenv()
 
 def main():
     try:
         # 1. Initialization
         logger.info("Loading environment variables")
-        env = load_env()
+        env = load_dotenv()
         
         logger.info("Initializing Comet experiment")
         experiment = init_experiment(
-            api_key=env["COMET_API_KEY"],
-            project_name=env["COMET_PROJECT_NAME"],
-            workspace=env["COMET_WORKSPACE"]
+            api_key=os.environ["COMET_ML_API_KEY"],
+            project_name=os.environ["COMET_ML_PROJECT_NAME"],
+            workspace=os.environ["COMET_ML_WORKSPACE"]
         )
         
         logger.info("Initializing Hopsworks")
         project, fs = init_hopsworks(
-            api_key=env["HOPSWORKS_API_KEY"],
-            project_name=env["HOPSWORKS_PROJECT_NAME"]
+            api_key=os.environ["HOPSWORKS_API_KEY"],
+            project_name=os.environ["HOPSWORKS_PROJECT_NAME"]
         )
 
         # 2. Data Pipeline
@@ -74,11 +77,28 @@ def main():
         experiment.log_parameters(best_params)
         experiment.log_metrics({"mse": mse, "rmse": rmse, "r2": r2})
 
-
-        # Save artifacts
+    # Save and log artifacts
         joblib.dump(scaler, "scaler.pkl")
-        experiment.log_model(scaler, "scaler")
-        experiment.log_model(model, "lightgbm_model")
+        experiment.log_model("scaler", "scaler.pkl", overwrite=True)
+
+        joblib.dump(model, "lightgbm_model.pkl")
+        experiment.log_model("lightgbm_model", "lightgbm_model.pkl", overwrite=True)
+
+    # Register model in Comet's Model Registry
+        # Register model in Comet's Model Registry
+        try:
+            logger.info(" Attempting to register model and push to registry...")
+            register_model(
+                experiment=experiment,
+                model=model,
+                model_name="lightgbm_model",
+                mse=mse
+    )
+            logger.success(" Model successfully pushed to Comet ML registry.")
+        except Exception as e:
+            logger.error(f" Error during model registration: {e}")
+    
+
 
         # 4. Evaluation
         logger.info("Evaluating model")
@@ -103,7 +123,7 @@ def main():
             y_true=y_test,
             y_pred=y_pred,
             feature_importances=feature_importances,
-            model_name="SalesForecaster",
+            model_name="lightgbm_model",
             target_name="sub_total"
         )
         for name, fig in plots.items():
@@ -124,9 +144,17 @@ def main():
         register_model(
             experiment=experiment,
             model=model,
-            model_name="sales_forecast_model",
+            model_name="lightgbm_model",
             mse=mse
         )
+        joblib.dump(model, "./models/lightgbm_model.pkl")
+
+       # Log model to Comet
+        experiment.log_model(
+            name="lightgbm_model",
+            file_or_folder="./models/lightgbm_model.pkl",
+        overwrite=True
+)
 
         logger.info("Pipeline completed successfully")
         experiment.log_other("status", "success")

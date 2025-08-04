@@ -1226,6 +1226,25 @@ telemetry = ["opentelemetry-api (==1.33.1)", "opentelemetry-exporter-otlp-proto-
 webauthn = ["fido2 (==1.1.2)"]
 
 [[package]]
+name = "networkx"
+version = "2.7"
+description = "Python package for creating and manipulating graphs and networks"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "networkx-2.7-py3-none-any.whl", hash = "sha256:836544e160f1b7ebf720c01667b7d2f5724c0424374aef2b665ed64dd14b0c7d"},
+    {file = "networkx-2.7.tar.gz", hash = "sha256:effb7d9cd5c36e1e0d33f42a3aef5badde5030535826a367d5cf608a170af515"},
+]
+
+[package.extras]
+default = ["matplotlib (>=3.4)", "numpy (>=1.19)", "pandas (>=1.3)", "scipy (>=1.8)"]
+developer = ["black (==22.1)", "mypy (>=0.931)", "pre-commit (>=2.17)", "pyupgrade (>=2.31)"]
+doc = ["nb2plots (>=0.6)", "numpydoc (>=1.2)", "pillow (>=9.0)", "pydata-sphinx-theme (>=0.8)", "sphinx (>=4.4)", "sphinx-gallery (>=0.10)", "texext (>=0.6.6)"]
+extra = ["lxml (>=4.6)", "pydot (>=1.4.2)", "pygraphviz (>=1.9)"]
+test = ["codecov (>=2.1)", "pytest (>=7.0)", "pytest-cov (>=3.0)"]
+
+[[package]]
 name = "numpy"
 version = "1.26.4"
 description = "Fundamental package for array computing in Python"
@@ -2174,4 +2193,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.13"
-content-hash = "394625427e36e4376acfe152b63bd9e5ef6fef671d3323d7d7cfffb20e5a2fc2"
+content-hash = "eb8e0eaea89ced1294c509c80740964a220d8ae5f06cc1e8b3054793169cac19"
