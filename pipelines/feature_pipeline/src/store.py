@@ -10,8 +10,9 @@ def store_data_to_feature_store():
     file_path = "data/transformed/final_standardized.csv"
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"{file_path} does not exist.")
+    
     df = pd.read_csv(file_path)
-    print(f" Loaded data: {df.shape[0]} rows, {df.shape[1]} columns")
+    print(f"[INFO] Loaded data: {df.shape[0]} rows, {df.shape[1]} columns")
 
     # Load env vars
     project_name = os.getenv("HOPSWORKS_PROJECT_NAME")
@@ -20,47 +21,40 @@ def store_data_to_feature_store():
     if not project_name or not api_key:
         raise ValueError("Missing HOPSWORKS_PROJECT_NAME or HOPSWORKS_API_KEY in .env")
 
-    # Login
+    # Login to Hopsworks
     project = hopsworks.login(project=project_name, api_key_value=api_key)
     feature_store = project.get_feature_store()
-    print(" Feature store initialized")
+    print("[INFO] Connected to Hopsworks Feature Store")
 
-    # FG config
     fg_name = "sales_record"
     fg_version = 1
 
-       # Always recreate feature group cleanly (for now)
+    # Try to delete existing FG if it exists
     try:
         fg = feature_store.get_feature_group(name=fg_name, version=fg_version)
-        print(" Deleting existing corrupted feature group")
+        print("[INFO] Existing feature group found. Deleting...")
         fg.delete()
     except:
-        print("ℹ No existing feature group, continuing")
+        print("[INFO] No existing feature group found. Creating new one...")
 
-    # Recreate it
+    # Create a new feature group
     fg = feature_store.create_feature_group(
         name=fg_name,
         version=fg_version,
-        primary_key=["product_name", "order_id"],  # adjust based on your data
-        #event_time ="created_at",  # adjust based on your data
+        primary_key=["product_name", "order_id"],
         description="Sales records for demand forecasting",
-        online_enabled=False,  # Set to True if you need online access
+        online_enabled=False  # Keep offline to avoid Kafka
     )
-    df = pd.read_csv("data/transformed/final_standardized.csv")
 
-# Fill nulls in product_name (must be string for primary key)
+    # Clean and prepare data
     df["product_name"] = df["product_name"].fillna("unknown_product").astype(str).str.slice(0, 100)
-    df["created_at"] = pd.to_datetime(df["created_at"], errors='coerce')  # Ensure datetime format
+    df["created_at"] = pd.to_datetime(df["created_at"], errors='coerce')
 
-    df["product_name"] = df["product_name"].str.slice(0, 100)
-    print(" Feature group created cleanly")
+    print("[INFO] Data cleaned. Starting insertion...")
 
-
-    # Insert data
-    if fg is None:
-        raise RuntimeError("Feature group is None. Aborting.")
-    fg.insert(df, write_options={'start_offline': True, 'wait_for_job': False})
-    print("Data inserted into feature store.")
+    # Insert into Feature Store (offline only, logs shown)
+    fg.insert(df, write_options={"start_offline": True, "wait_for_job": True})
+    print("[SUCCESS] Data inserted into Hopsworks Feature Store (offline).")
 
 if __name__ == "__main__":
     store_data_to_feature_store()
