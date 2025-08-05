@@ -10,7 +10,7 @@ hopsworks_project_name = os.getenv("HOPSWORKS_PROJECT_NAME")
 
 
 def init_hopsworks():
-    project = hopsworks.login()  # Uses environment variables set by `load_dotenv()`
+    project = hopsworks.login()  
     fs = project.get_feature_store()
     return fs
 
