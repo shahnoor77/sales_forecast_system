@@ -1,15 +1,25 @@
 {
-  "name": "sales-forecast-dev",
-  "build": {
-    "dockerfile": "Dockerfile"
+  "name": "Sales Forecast Dev Env",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+    "version": "latest"}
   },
-  "postCreateCommand": "poetry install",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
   "customizations": {
     "vscode": {
       "extensions": [
         "ms-python.python",
+        "ms-python.vscode-pylance",
         "ms-azuretools.vscode-docker"
-      ]
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
     }
-  }
+  },
+  "postCreateCommand": "poetry install || pip install -r requirements.txt",
+  "remoteUser": "root"
 }

@@ -1,0 +1,42 @@
+# Use official Python 3.12 slim base
+FROM python:3.12-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV POETRY_VERSION=1.8.2
+
+# Set working directory
+WORKDIR /app
+
+# Install system-level dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    libpq-dev \
+    default-libmysqlclient-dev \
+    gcc \
+    git \
+    && apt-get clean
+
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="/root/.local/bin:$PATH"
+
+# Disable Poetry virtualenv creation
+RUN poetry config virtualenvs.create false
+
+# Copy dependency files first
+COPY pyproject.toml poetry.lock ./
+
+# Install dependencies
+RUN poetry install --no-interaction --no-ansi
+
+# Copy rest of the application code
+COPY . .
+
+# Command to run pipeline
+CMD ["python", "-m", "src.main"]
+
